@@ -13,6 +13,8 @@ onMounted(() => {
 const onResultClick = (date:string) => {
   mainStore.getDailyResult(date)
 }
+
+
 </script>
 
 <template lang="pug">
