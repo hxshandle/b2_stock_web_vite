@@ -5,7 +5,8 @@ import { ref } from 'vue'
 const mainStore = useMainStore()
 
 const onStockClick= (stock:any) => {
-  console.log(stock.name)
+  mainStore.curStock = stock
+  mainStore.getStockPrices(stock.ts_code)
 }
 </script>
 
@@ -16,7 +17,7 @@ const onStockClick= (stock:any) => {
       span.text-info {{mainStore.curDate}}
 
     .row
-      .col-lg-2(v-for="stock in mainStore.stockList")
+      .col-lg-6(v-for="stock in mainStore.stockList")
         a(@click="onStockClick(stock)" href="javascript:void(0)")
           .card.bg-secondary.mb-2
             .card-body

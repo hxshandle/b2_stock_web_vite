@@ -5,6 +5,7 @@ export const useMainStore = defineStore('main', {
   state: () => ({
     curDate: null as string | null,
     curStock: null as object | null,
+    stockPrices:[],
     stockList: [],
     resultList: []
   }),
@@ -18,6 +19,10 @@ export const useMainStore = defineStore('main', {
       let response = await axios.get(`/api/getDailyResult/${date}`)
       this.stockList = response.data
       this.curDate = date
+    },
+    async getStockPrices(ts_code:string) {
+      let response = await axios.get(`/api/getStockPrices/${ts_code}`)
+      this.stockPrices = response.data
     }
   },
 })

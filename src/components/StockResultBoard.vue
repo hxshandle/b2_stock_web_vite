@@ -2,6 +2,7 @@
 import { onMounted, ref } from 'vue'
 import StockBaseInfoVue from './StockBaseInfo.vue'
 import StockListVue from './StockList.vue'
+import KlineVue from './Kline.vue'
 import { useMainStore } from '../stores/MainStore'
 
 const mainStore = useMainStore()
@@ -22,9 +23,11 @@ const onResultClick = (date:string) => {
         .row 
           .col(v-for="d in mainStore.resultList")
             button.btn.btn-info(@click="onResultClick(d)") {{d}}
-  StockListVue.mt-4
-
-  .row.py-4
-    .col-12
-      StockBaseInfoVue
+  
+  .row
+    .col-lg-3
+      StockListVue.mt-2
+    .col-lg-9
+      KlineVue.mt-2
+      
 </template>
