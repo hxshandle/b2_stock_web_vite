@@ -19,17 +19,18 @@ const onResultClick = (date:string) => {
 
 <template lang="pug">
 .container-fluid.py-4
-  .card 
-    .card-body
-      .card-title 结果日期
-        .row 
-          .col(v-for="d in mainStore.resultList")
-            button.btn.btn-info(@click="onResultClick(d)") {{d}}
+
   
   .row
     .col-lg-3
+      .card 
+        .card-body
+          .card-title 结果日期
+            .row 
+              .col.m-2(v-for="d in mainStore.resultList")
+                button.btn.btn-info(@click="onResultClick(d)") {{d}}
       StockListVue.mt-2
     .col-lg-9
-      KlineVue.mt-2
+      KlineVue
       
 </template>

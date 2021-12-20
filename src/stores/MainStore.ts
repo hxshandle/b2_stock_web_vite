@@ -7,7 +7,8 @@ export const useMainStore = defineStore('main', {
     curStock: null as object | null,
     stockPrices:[],
     stockList: [],
-    resultList: []
+    resultList: [],
+    markedStocks: []
   }),
   actions: {
     async fetchResultList() {

@@ -17,6 +17,15 @@ onMounted(()=>{
     if (event.key == 'k') {
       mainStore.walkStockList(-1)
     }
+
+    if (event.key == 'm' && mainStore.curStock != null) {
+      if (mainStore.markedStocks.includes(mainStore.curStock.ts_code)) {
+          mainStore.markedStocks.splice(mainStore.markedStocks.indexOf(mainStore.curStock.ts_code),1)
+      } else {
+        mainStore.markedStocks.push(mainStore.curStock.ts_code)
+      }
+    }
+
   });
 })
 
@@ -30,7 +39,7 @@ onMounted(()=>{
 
     .row
       .col-lg-6(v-for="stock in mainStore.stockList")
-        a(@click="onStockClick(stock)" href="javascript:void(0)" :class="{ 'text-danger': stock.ts_code == mainStore.curStock?.ts_code }") {{stock.name}} | {{stock.symbol}} | {{stock.industry}}
+        a.px-1(@click="onStockClick(stock)" href="javascript:void(0)" :class="{'bg-light': mainStore.markedStocks.includes(stock.ts_code) , 'text-danger': stock.ts_code == mainStore.curStock?.ts_code}") {{stock.name}} | {{stock.symbol}} | {{stock.industry}}
 
 
 
