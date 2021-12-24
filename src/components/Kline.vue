@@ -142,6 +142,7 @@ mainStore.$subscribe((mution, state) => {
   }
 })
 
+
 onMounted(() => {
   chart = echarts.init(document.getElementById('k-line-chart'))
 })
@@ -151,12 +152,13 @@ onMounted(() => {
 .card
   .card-body 
     .card-title {{ mainStore.curStock?.name }}
+      span(:class='{"text-danger": mainStore.curStockBaseInfo.last_price.pct_chg > 0, "text-success": mainStore.curStockBaseInfo.last_price.pct_chg <= 0}') &nbsp;&nbsp;&nbsp;&nbsp;{{ mainStore.curStockBaseInfo?.last_price?.pct_chg.toFixed(2)}}%
       .row
         .col-12
           StockBaseInfoVue
           
         .col-12
-          #k-line-chart(style='width: 100%; height: 800px')
+          #k-line-chart(style='width: 100%; height: calc(100vh - 216px)')
 </template>
 
 

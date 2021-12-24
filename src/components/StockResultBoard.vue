@@ -30,7 +30,7 @@ const onResultClick = (date:string) => {
               .col.m-2(v-for="d in mainStore.resultList")
                 button.btn.btn-info(@click="onResultClick(d)") {{d}}
       StockListVue.mt-2
-    .col-lg-9
+    .col-lg-6
       KlineVue
       
 </template>

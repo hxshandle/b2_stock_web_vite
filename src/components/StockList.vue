@@ -10,6 +10,7 @@ const onStockClick= (stock:any) => {
 }
 
 onMounted(()=>{
+  new PerfectScrollbar('.perfect-scrollbar')
   document.addEventListener('keydown', (event)=>{
     if (event.key =='j') {
       mainStore.walkStockList(1)
@@ -37,9 +38,10 @@ onMounted(()=>{
     .card-title 股票列表 ({{mainStore.stockList.length}}) 
       span.text-info {{mainStore.curDate}}
 
-    .row
-      .col-lg-6(v-for="stock in mainStore.stockList")
-        a.px-1(@click="onStockClick(stock)" href="javascript:void(0)" :class="{'bg-light': mainStore.markedStocks.includes(stock.ts_code) , 'text-danger': stock.ts_code == mainStore.curStock?.ts_code}") {{stock.name}} | {{stock.symbol}} | {{stock.industry}}
+    div.perfect-scrollbar(style="height: calc(100vh - 360px);position: relative;")
+      .row
+        .col-lg-6(v-for="stock in mainStore.stockList")
+          a.px-1.small(@click="onStockClick(stock)" href="javascript:void(0)" :class="{'bg-light': mainStore.markedStocks.includes(stock.ts_code) , 'text-danger': stock.ts_code == mainStore.curStock?.ts_code}") {{stock.name}} | {{stock.symbol}} | {{stock.industry}}
 
 
 

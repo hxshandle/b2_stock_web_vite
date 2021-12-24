@@ -5,6 +5,11 @@ export const useMainStore = defineStore('main', {
   state: () => ({
     curDate: null as string | null,
     curStock: null as object | null,
+    curStockBaseInfo: {
+      last_price: {
+        pct_chg: 0
+      }
+    },
     stockPrices:[],
     stockList: [],
     resultList: [],
@@ -24,6 +29,7 @@ export const useMainStore = defineStore('main', {
     async getStockPrices(ts_code:string) {
       let response = await axios.get(`/api/getStockPrices/${ts_code}`)
       this.stockPrices = response.data
+      this.curStockBaseInfo.last_price= response.data[response.data.length - 1]
     },
     walkStockList(towards: number) {
       if (this.stockList.length == 0) {
