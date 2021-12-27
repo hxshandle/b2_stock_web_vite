@@ -12,6 +12,8 @@ export const useMainStore = defineStore('main', {
     },
     stockPrices:[],
     stockList: [],
+    engulfStocks: [],
+    starHammerStocks:[],
     resultList: [],
     markedStocks: []
   }),
@@ -23,7 +25,10 @@ export const useMainStore = defineStore('main', {
     },
     async getDailyResult(date:string) {
       let response = await axios.get(`/api/getDailyResult/${date}`)
-      this.stockList = response.data
+      
+      this.stockList = response.data.engulf
+      this.starHammerStocks = response.data.star_hammer
+      this.engulfStocks = response.data.engulf
       this.curDate = date
     },
     async getStockPrices(ts_code:string) {
