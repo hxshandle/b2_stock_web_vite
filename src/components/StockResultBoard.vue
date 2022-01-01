@@ -26,9 +26,9 @@ const onResultClick = (date:string) => {
       .card 
         .card-body
           .card-title 结果日期
-            .row 
-              .col.m-2(v-for="d in mainStore.resultList")
-                button.btn.btn-info(@click="onResultClick(d)") {{d}}
+          .col
+            .btn-group
+              button.btn.btn-primary.btn-sm(v-for="d in mainStore.resultList" @click="onResultClick(d)") {{d}}
       StockListVue.mt-2
     .col-lg-6
       KlineVue
