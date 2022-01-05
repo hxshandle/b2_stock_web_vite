@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { useMainStore } from '../stores/MainStore'
 import StockBaseInfoVue from './StockBaseInfo.vue'
+import type { DailyPrice } from '../types';
 
 const mainStore = useMainStore()
 let chart: any = null
@@ -21,7 +22,6 @@ const resetDetailInfo = () => {
 }
 
 const onBrushSelected = (params: any) => {
-  console.log(params)
   let selectedIndex = params.batch[0].selected[0].dataIndex
   let totalCount = selectedIndex.length
   let bars = selectedIndex.map((x: number) => mainStore.stockPrices[x])
@@ -37,7 +37,6 @@ const onBrushSelected = (params: any) => {
     (100 * (closePrices[totalCount - 1] - closePrices[0])) /
     closePrices[0]
   ).toFixed(2)
-  console.log(`涨跌幅 ${closeChgPect}`)
   let d = selectedDetailInfo.value
   d.totalCount = totalCount
   d.startDate = mainStore.stockPrices[selectedIndex[0]].trade_date
@@ -52,7 +51,7 @@ const onBrushSelected = (params: any) => {
 
 mainStore.$subscribe((mution, state) => {
   if (lastStockPrices != state.stockPrices) {
-    let data = mainStore.stockPrices.map((x) => {
+    let data = mainStore.stockPrices.map((x:DailyPrice) => {
       return [
         x.trade_date,
         x.open,

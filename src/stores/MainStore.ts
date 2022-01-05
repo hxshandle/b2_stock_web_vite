@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import axios from "axios"
+import { DailyPrice } from '../types';
 
 export const useMainStore = defineStore('main', {
   state: () => ({
@@ -11,7 +12,7 @@ export const useMainStore = defineStore('main', {
       }
     },
     candlePattern: 'star_hammer',
-    stockPrices:[] as [],
+    stockPrices:[] as DailyPrice[],
     stockList: [] as [],
     engulfStocks: [] as [],
     starHammerStocks:[] as [],
