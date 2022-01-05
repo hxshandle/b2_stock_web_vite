@@ -6,6 +6,49 @@ import StockBaseInfoVue from './StockBaseInfo.vue'
 const mainStore = useMainStore()
 let chart = null
 let lastStockPrices: [] | null = null
+const selectedDetailInfo = ref({})
+
+const resetDetailInfo = () => {
+  let d = selectedDetailInfo.value
+  d.totalCount = ''
+  d.startDate = ''
+  d.endDate = ''
+  d.startClosePrice = null
+  d.endClosePrice = null
+  d.closeChgPect = null
+  d.highestPrice = null
+  d.lowestPrice = null
+}
+
+const onBrushSelected = (params: any) => {
+  console.log(params)
+  let selectedIndex = params.batch[0].selected[0].dataIndex
+  let totalCount = selectedIndex.length
+  let bars = selectedIndex.map((x: number) => mainStore.stockPrices[x])
+  let closePrices = bars.map((x: any) => x.close)
+  let highPrices = bars.map((x: any) => x.high)
+  let lowPrices = bars.map((x: any) => x.low)
+  // 收盘价的涨跌幅度
+  if (totalCount == 0) {
+    resetDetailInfo()
+    return
+  }
+  let closeChgPect = (
+    (100 * (closePrices[totalCount - 1] - closePrices[0])) /
+    closePrices[0]
+  ).toFixed(2)
+  console.log(`涨跌幅 ${closeChgPect}`)
+  let d = selectedDetailInfo.value
+  d.totalCount = totalCount
+  d.startDate = mainStore.stockPrices[selectedIndex[0]].trade_date
+  d.endDate = mainStore.stockPrices[selectedIndex[totalCount-1]].trade_date
+  d.startClosePrice = mainStore.stockPrices[selectedIndex[0]].close
+  d.endClosePrice = mainStore.stockPrices[selectedIndex[totalCount-1]].close
+  d.closeChgPect = closeChgPect
+  d.highestPrice = Math.max(...highPrices)
+  d.lowestPrice = Math.min(...lowPrices)
+  
+}
 
 mainStore.$subscribe((mution, state) => {
   if (lastStockPrices != state.stockPrices) {
@@ -18,28 +61,54 @@ mainStore.$subscribe((mution, state) => {
         x.high,
         x.vol,
         x.close > x.open ? 1 : -1,
-        x.pct_chg.toFixed(2)
+        x.pct_chg.toFixed(2),
       ]
     })
-    data.unshift(['date', 'open', 'close', 'low', 'high', 'vol','vol_indent', 'pec_chg'])
+    data.unshift([
+      'date',
+      'open',
+      'close',
+      'low',
+      'high',
+      'vol',
+      'vol_indent',
+      'pec_chg',
+    ])
     let options = {
       dataset: {
         source: data,
       },
-       visualMap: {
-         show:false,
+      visualMap: {
+        show: false,
         seriesIndex: 1,
-        dimension:6,
+        dimension: 6,
         pieces: [
           {
             value: 1,
-            color: '#eb5454'
+            color: '#eb5454',
           },
           {
             value: -1,
-            color: '#47b262'
-          }
-        ]
+            color: '#47b262',
+          },
+        ],
+      },
+      toolbox: {
+        feature: {
+          brush: {
+            type: ['lineX', 'clear'],
+          },
+        },
+      },
+      brush: {
+        xAxisIndex: 'all',
+        brushLink: 'all',
+        throttleType: 'debounce', //开启选中延迟后调用回调延迟
+        throttleDelay: 600, //选中延迟后调用回调延迟时
+        // toolbox: ['rect', 'clear'],
+        outOfBrush: {
+          colorAlpha: 1,
+        },
       },
       tooltip: {
         trigger: 'axis',
@@ -138,10 +207,10 @@ mainStore.$subscribe((mution, state) => {
       ],
     }
     chart.setOption(options)
+    chart.on('brushselected', onBrushSelected)
     lastStockPrices = state.stockPrices
   }
 })
-
 
 onMounted(() => {
   chart = echarts.init(document.getElementById('k-line-chart'))
@@ -149,16 +218,41 @@ onMounted(() => {
 </script>
 
 <template lang="pug">
-.card
-  .card-body 
-    .card-title {{ mainStore.curStock?.name }}
-      span(:class='{"text-danger": mainStore.curStockBaseInfo.last_price.pct_chg > 0, "text-success": mainStore.curStockBaseInfo.last_price.pct_chg <= 0}') &nbsp;&nbsp;&nbsp;&nbsp;{{ mainStore.curStockBaseInfo?.last_price?.pct_chg.toFixed(2)}}%
-      .row
-        .col-12
-          StockBaseInfoVue
-          
-        .col-12
-          #k-line-chart(style='width: 100%; height: calc(100vh - 216px)')
+.row
+  .col-8
+    .card
+      .card-body 
+        .card-title {{ mainStore.curStock?.name }}
+          span(
+            :class='{ "text-danger": mainStore.curStockBaseInfo.last_price.pct_chg > 0, "text-success": mainStore.curStockBaseInfo.last_price.pct_chg <= 0 }'
+          ) &nbsp;&nbsp;&nbsp;&nbsp;{{ mainStore.curStockBaseInfo?.last_price?.pct_chg.toFixed(2) }}%
+          .row
+            .col-12
+              StockBaseInfoVue
+
+            .col-12
+              #k-line-chart(style='width: 100%; height: calc(100vh - 216px)')
+  .col-4 
+    .card
+      .card-body
+        .row
+          .col-12
+            p 交易天数：{{selectedDetailInfo.totalCount}}
+          .col-4
+            p 开始日期：{{selectedDetailInfo.startDate}}
+          .col-4
+            p 结束日期：{{selectedDetailInfo.endDate}}
+        .row
+          .col-4
+            p 起始收盘价：{{selectedDetailInfo.startClosePrice}}
+          .col-4
+            p 结束收盘价：{{selectedDetailInfo.endClosePrice}}
+          .col-4
+            p 涨跌幅：{{selectedDetailInfo.closeChgPect}}%
+          .col-4
+            p 最高价{{selectedDetailInfo.highestPrice}}
+          .col-4
+            p 最低价：{{selectedDetailInfo.lowestPrice}}
+          .col-4
+            p 最大回撤{{ (100 * (selectedDetailInfo.highestPrice - selectedDetailInfo.lowestPrice) / selectedDetailInfo.highestPrice).toFixed(2) }}%
 </template>
-
-
