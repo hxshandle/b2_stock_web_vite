@@ -4,7 +4,7 @@ import { useMainStore } from '../stores/MainStore'
 import StockBaseInfoVue from './StockBaseInfo.vue'
 
 const mainStore = useMainStore()
-let chart = null
+let chart: any = null
 let lastStockPrices: [] | null = null
 const selectedDetailInfo = ref({})
 
@@ -97,6 +97,10 @@ mainStore.$subscribe((mution, state) => {
         feature: {
           brush: {
             type: ['lineX', 'clear'],
+            title: {
+              lineX: '选择',
+              clear: '清除'
+            }
           },
         },
       },
@@ -206,6 +210,11 @@ mainStore.$subscribe((mution, state) => {
         },
       ],
     }
+    // 清空选择框
+    chart.dispatchAction({
+      type: 'brush',
+      areas: []
+    })
     chart.setOption(options)
     chart.on('brushselected', onBrushSelected)
     lastStockPrices = state.stockPrices
@@ -254,5 +263,5 @@ onMounted(() => {
           .col-4
             p 最低价：{{selectedDetailInfo.lowestPrice}}
           .col-4
-            p 最大回撤{{ (100 * (selectedDetailInfo.highestPrice - selectedDetailInfo.lowestPrice) / selectedDetailInfo.highestPrice).toFixed(2) }}%
+            p 最大回撤：{{ (100 * (selectedDetailInfo.highestPrice - selectedDetailInfo.lowestPrice) / selectedDetailInfo.highestPrice).toFixed(2) }}%
 </template>

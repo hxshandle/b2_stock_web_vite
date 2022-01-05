@@ -11,12 +11,12 @@ export const useMainStore = defineStore('main', {
       }
     },
     candlePattern: 'star_hammer',
-    stockPrices:[],
-    stockList: [],
-    engulfStocks: [],
-    starHammerStocks:[],
-    resultList: [],
-    markedStocks: []
+    stockPrices:[] as [],
+    stockList: [] as [],
+    engulfStocks: [] as [],
+    starHammerStocks:[] as [],
+    resultList: [] as [],
+    markedStocks: [] as []
   }),
   actions: {
     async fetchResultList() {
