@@ -2,7 +2,7 @@
   "name": "b2_stock_web_vite",
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite --host",
+    "dev": "vite --host 0.0.0.0",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
     "preinstall": "npx only-allow pnpm"
