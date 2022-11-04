@@ -2,12 +2,16 @@
 import { ref, onMounted } from 'vue'
 import { useMainStore } from '../stores/MainStore'
 import StockBaseInfoVue from './StockBaseInfo.vue'
-import type { DailyPrice } from '../types';
+import type { DailyPrice } from '../types'
 
 const mainStore = useMainStore()
 let chart: any = null
 let lastStockPrices: [] | null = null
 const selectedDetailInfo = ref({})
+
+const doQuery = () => {
+  mainStore.queryStockBySymbol(mainStore.stockSymbolQuery)
+}
 
 const resetDetailInfo = () => {
   let d = selectedDetailInfo.value
@@ -40,18 +44,17 @@ const onBrushSelected = (params: any) => {
   let d = selectedDetailInfo.value
   d.totalCount = totalCount
   d.startDate = mainStore.stockPrices[selectedIndex[0]].trade_date
-  d.endDate = mainStore.stockPrices[selectedIndex[totalCount-1]].trade_date
+  d.endDate = mainStore.stockPrices[selectedIndex[totalCount - 1]].trade_date
   d.startClosePrice = mainStore.stockPrices[selectedIndex[0]].close
-  d.endClosePrice = mainStore.stockPrices[selectedIndex[totalCount-1]].close
+  d.endClosePrice = mainStore.stockPrices[selectedIndex[totalCount - 1]].close
   d.closeChgPect = closeChgPect
   d.highestPrice = Math.max(...highPrices)
   d.lowestPrice = Math.min(...lowPrices)
-  
 }
 
 mainStore.$subscribe((mution, state) => {
   if (lastStockPrices != state.stockPrices) {
-    let data = mainStore.stockPrices.map((x:DailyPrice) => {
+    let data = mainStore.stockPrices.map((x: DailyPrice) => {
       return [
         x.trade_date,
         x.open,
@@ -98,8 +101,8 @@ mainStore.$subscribe((mution, state) => {
             type: ['lineX', 'clear'],
             title: {
               lineX: '选择',
-              clear: '清除'
-            }
+              clear: '清除',
+            },
           },
         },
       },
@@ -212,7 +215,7 @@ mainStore.$subscribe((mution, state) => {
     // 清空选择框
     chart.dispatchAction({
       type: 'brush',
-      areas: []
+      areas: [],
     })
     chart.setOption(options)
     chart.on('brushselected', onBrushSelected)
@@ -230,7 +233,19 @@ onMounted(() => {
   .col-8
     .card
       .card-body 
-        .card-title {{ mainStore.curStock?.name }}
+        .form.mb-2
+          .input-group
+            input#ipt-stock-symbol-query.form-control(
+              @keyup.enter='doQuery',
+              type='text',
+              placeholder='股票代码',
+              size='6',
+              maxlength='6',
+              v-model='mainStore.stockSymbolQuery'
+            )
+            button#btn-search.btn.btn-primary(type='button', @click="doQuery")
+              | 查询
+        .card-title {{ mainStore.curStockBaseInfo.info.name }}
           span(
             :class='{ "text-danger": mainStore.curStockBaseInfo.last_price.pct_chg > 0, "text-success": mainStore.curStockBaseInfo.last_price.pct_chg <= 0 }'
           ) &nbsp;&nbsp;&nbsp;&nbsp;{{ mainStore.curStockBaseInfo?.last_price?.pct_chg.toFixed(2) }}%
@@ -245,22 +260,22 @@ onMounted(() => {
       .card-body
         .row
           .col-12
-            p 交易天数：{{selectedDetailInfo.totalCount}}
+            p 交易天数：{{ selectedDetailInfo.totalCount }}
           .col-4
-            p 开始日期：{{selectedDetailInfo.startDate}}
+            p 开始日期：{{ selectedDetailInfo.startDate }}
           .col-4
-            p 结束日期：{{selectedDetailInfo.endDate}}
+            p 结束日期：{{ selectedDetailInfo.endDate }}
         .row
           .col-4
-            p 起始收盘价：{{selectedDetailInfo.startClosePrice}}
+            p 起始收盘价：{{ selectedDetailInfo.startClosePrice }}
           .col-4
-            p 结束收盘价：{{selectedDetailInfo.endClosePrice}}
+            p 结束收盘价：{{ selectedDetailInfo.endClosePrice }}
           .col-4
-            p 涨跌幅：{{selectedDetailInfo.closeChgPect}}%
+            p 涨跌幅：{{ selectedDetailInfo.closeChgPect }}%
           .col-4
-            p 最高价{{selectedDetailInfo.highestPrice}}
+            p 最高价{{ selectedDetailInfo.highestPrice }}
           .col-4
-            p 最低价：{{selectedDetailInfo.lowestPrice}}
+            p 最低价：{{ selectedDetailInfo.lowestPrice }}
           .col-4
-            p 最大回撤：{{ (100 * (selectedDetailInfo.highestPrice - selectedDetailInfo.lowestPrice) / selectedDetailInfo.highestPrice).toFixed(2) }}%
+            p 最大回撤：{{ ((100 * (selectedDetailInfo.highestPrice - selectedDetailInfo.lowestPrice)) / selectedDetailInfo.highestPrice).toFixed(2) }}%
 </template>

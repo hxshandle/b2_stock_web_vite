@@ -5,7 +5,7 @@ import { ref, onMounted } from 'vue'
 const mainStore = useMainStore()
 
 const onStockClick = (stock: any) => {
-  mainStore.curStock = stock
+  mainStore.changeCurStock(stock)
   mainStore.getStockPrices(stock.ts_code)
 }
 
@@ -50,7 +50,7 @@ onMounted(() => {
 <template lang="pug">
 .card
   .card-body
-    .card-title 股票列表 ({{ mainStore.stockList.length }})
+    .card-title 股票列表 ({{ mainStore.stockList?.length }})
       span.text-info {{ mainStore.curDate }}
     .row
       .clo
