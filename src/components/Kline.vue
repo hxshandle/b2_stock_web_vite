@@ -6,8 +6,17 @@ import type { DailyPrice } from '../types'
 
 const mainStore = useMainStore()
 let chart: any = null
-let lastStockPrices: [] | null = null
-const selectedDetailInfo = ref({})
+let lastStockPrices: DailyPrice[] | null = null
+const selectedDetailInfo = ref({
+  totalCount:'',
+  startDate: '',
+  endDate: '',
+  startClosePrice: 0 as number,
+  endClosePrice: 0 as number,
+  closeChgPect: 0 as string | number,
+  highestPrice: 0 as number,
+  lowestPrice: 0 as number
+})
 
 const doQuery = () => {
   mainStore.queryStockBySymbol(mainStore.stockSymbolQuery)
@@ -18,11 +27,11 @@ const resetDetailInfo = () => {
   d.totalCount = ''
   d.startDate = ''
   d.endDate = ''
-  d.startClosePrice = null
-  d.endClosePrice = null
-  d.closeChgPect = null
-  d.highestPrice = null
-  d.lowestPrice = null
+  d.startClosePrice = 0
+  d.endClosePrice = 0
+  d.closeChgPect = 0
+  d.highestPrice = 0
+  d.lowestPrice = 0
 }
 
 const onBrushSelected = (params: any) => {
@@ -127,10 +136,12 @@ mainStore.$subscribe((mution, state) => {
         textStyle: {
           color: '#000',
         },
+        // @ts-ignore
         position: function (pos, params, el, elRect, size) {
           const obj = {
             top: 10,
           }
+          // @ts-ignore
           obj[['left', 'right'][+(pos[0] < size.viewSize[0] / 2)]] = 30
           return obj
         },
@@ -224,6 +235,7 @@ mainStore.$subscribe((mution, state) => {
 })
 
 onMounted(() => {
+  // @ts-ignore
   chart = echarts.init(document.getElementById('k-line-chart'))
 })
 </script>

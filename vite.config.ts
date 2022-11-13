@@ -19,7 +19,7 @@ export default defineConfig({
     port: 3902,
     proxy: {
       '/api': {
-        target: 'http://localhost:5000',
+        target: 'http://192.168.50.110:5004',
         changeOrigin: true,
       },
       '/mock-api': {

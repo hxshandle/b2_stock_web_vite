@@ -1,11 +1,12 @@
 import { defineStore } from 'pinia'
-import axios from "axios"
-import { DailyPrice } from '../types';
+// import axios from "axios"
+import {request} from "./HttpUtils";
+import { DailyPrice, Stock } from '../types';
 
 export const useMainStore = defineStore('main', {
   state: () => ({
     curDate: null as string | null,
-    curStock: null as object | null,
+    curStock: null as Stock | null ,
     curStockBaseInfo: {
       info: {
         name: ''
@@ -18,11 +19,11 @@ export const useMainStore = defineStore('main', {
     candlePattern: 'star_hammer',
     stockPrices:[] as DailyPrice[],
     lastStockPrices: [] as DailyPrice[],
-    stockList: [] as [],
+    stockList: [] as Stock[],
     engulfStocks: [] as [],
-    starHammerStocks:[] as [],
+    starHammerStocks:[] as Stock[],
     resultList: [] as [],
-    markedStocks: [] as []
+    markedStocks: [] as string[]
   }),
   actions: {
     changeCurStock(stock: any) {
@@ -30,12 +31,12 @@ export const useMainStore = defineStore('main', {
       this.curStockBaseInfo.info = stock
     },
     async fetchResultList() {
-      let response = await axios.get('/api/fetchResultList')
+        let response = await request.get('/api/fetchResultList')
       let data = response.data
       this.resultList = data
     },
     async getDailyResult(date:string) {
-      let response = await axios.get(`/api/getDailyResult/${date}`)
+        let response = await request.get(`/api/getDailyResult/${date}`)
       this.stockList = response.data.star_hammer
       this.starHammerStocks = response.data.star_hammer
       this.engulfStocks = response.data.engulf
@@ -43,12 +44,12 @@ export const useMainStore = defineStore('main', {
       this.curDate = date
     },
     async getStockPrices(ts_code:string) {
-      let response = await axios.get(`/api/getStockPrices/${ts_code}`)
+        let response = await request.get(`/api/getStockPrices/${ts_code}`)
       this.stockPrices = response.data
       this.curStockBaseInfo.last_price= response.data[response.data.length - 1]
     },
     async queryStockBySymbol(code:string) {
-      let response = await axios.get(`/api/getStockPrices_v2/${code}`)
+        let response = await request.get(`/api/getStockPrices_v2/${code}`)
       this.lastStockPrices = this.stockPrices
       this.stockPrices = response.data.prices
       this.curStockBaseInfo.info = response.data.info
@@ -59,11 +60,11 @@ export const useMainStore = defineStore('main', {
         return
       }
       if (this.curStock == null) {
-        this.curStock = this.stockList[0]
+        this.curStock = this.stockList[0]!
         this.getStockPrices(this.curStock.ts_code)
         return
       }
-      let curIndex = this.stockList.findIndex(x => x.ts_code == this.curStock.ts_code)
+      let curIndex = this.stockList.findIndex(x => x.ts_code == this.curStock!.ts_code)
       let newIndex = curIndex + towards
       if (newIndex < 0 || newIndex == this.stockList.length) {
         return
